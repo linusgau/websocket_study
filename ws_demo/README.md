@@ -1,12 +1,6 @@
 > 仅实现消息发送
 
-webSocket是一种在单个TCP连接上进行全双工通信的协议。
 
-webSocket使得客户端和服务器之间的数据交换变得更加简单，允许服务端主动向客户端推送数据。在WebSocket API中，浏览器和服务器只需要完成一次握手，两者之间就直接可以创建持久性的连接，并进行双向数据传输
-
-现在，很多网站为了实现推送技术，所用的技术都是轮询。轮询是在特定的的时间间隔（如每1秒），由浏览器对服务器发出HTTP请求，然后由服务器返回最新的数据给客户端的浏览器。这种传统的模式带来很明显的缺点，即浏览器需要不断的向服务器发出请求，然而HTTP请求可能包含较长的头部，其中真正有效的数据可能只是很小的一部分，显然这样会浪费很多的带宽等资源。
-
-基于dwebsocket库来将socket嵌入到django服务中，使其服务兼具http协议和socket协议，能够达到实时前后端通信，后端主动推送等功能。
 
 # 什么是WebSocket
 
@@ -25,7 +19,7 @@ WebSocket使得客户端和服务器之间的数据交换变得更加简单，�
 WebSocket 协议在2008年诞生，2011年成为国际标准，所有浏览器都已经支持了。你可以这么判断浏览器是否支持：
 
 ```html
-Copy<script>
+<script>
     if ('WebSocket' in window) {
         console.log('你的浏览器支持 WebSocket')
     }
@@ -38,16 +32,16 @@ django实现websocket大致上有两种方式，一种channels，一种是dwebso
 
 # Install dwebsocket
 
-```
-Copypip install dwebsocket  # 最新版
+```bash
+pip install dwebsocket  # 最新版
 # 网上貌似说最新的不好用，我们可以下载大家使用较多的老版本
 pip install dwebsocket==0.4.2
 ```
 
 我开始就下的默认版本，然后报错：
 
-```
-CopyAttributeError: 'WSGIRequest' object has no attribute 'is_websocket'
+```bash
+AttributeError: 'WSGIRequest' object has no attribute 'is_websocket'
 ```
 
 后来下载老版本就好了。
@@ -66,7 +60,7 @@ CopyAttributeError: 'WSGIRequest' object has no attribute 'is_websocket'
 | request.websocket.has_messages()   | 如果有新消息返回True，否则返回False                          |                                                       |
 | request.websocket.send()           | 向客户端发送bytes类型的数据                                  |                                                       |
 | request.websocket.close()          | 服务器端主动关闭websocket服务                                |                                                       |
-| request.websocket._*iter*_()       | websocket迭代器                                              |                                                       |
+| request.websocket.\_\_iter\_\_()   | websocket迭代器                                              |                                                       |
 
 # 客户端的属性和方法
 
@@ -99,9 +93,10 @@ CopyAttributeError: 'WSGIRequest' object has no attribute 'is_websocket'
 
 # 必要的settings配置
 
-```
+```python
 settings.py
-CopyMIDDLEWARE_CLASSES = [
+
+MIDDLEWARE_CLASSES = [
     'dwebsocket.middleware.WebSocketMiddleware'
 ]
 WEBSOCKET_ACCEPT_ALL=True  # 可以允许每一个单独的视图实用websocket
@@ -119,9 +114,10 @@ WEBSOCKET_ACCEPT_ALL=True  # 可以允许每一个单独的视图实用websocket
 
 > settings中保持默认即可
 
-```
+```python
 urls.py
-Copyfrom django.conf.urls import url
+
+from django.conf.urls import url
 from django.contrib import admin
 from web import views   # web是我的APP名称
 
